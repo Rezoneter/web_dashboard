@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from PIL import Image
 from datetime import datetime
+import pandas as pd
 
 # Upload files
 
@@ -25,7 +26,9 @@ def save_uploaded_file(directory, file):
 def main():
     st.header('File upload Project')
 
+    # set Sidebar and use if to selcet upload file type
     choice = st.sidebar.selectbox('Menu', ['Image','CSV'])
+
 
     if choice == 'Image':
         st.subheader('Image file upload')
@@ -33,8 +36,8 @@ def main():
         file = st.file_uploader('Upload Image file now', type =['jfif','jpg', 'jpeg','png', 'webp'])
 
         if file is not None:
-            # To manage file name consistently
-            # In company have file naming rules
+            # How to manage file name consistently
+            # In company, they have file naming rules
 
             # If combine datetime with file name
             # The file name gonna have unique name
@@ -50,11 +53,28 @@ def main():
             img = Image.open(file)
             st.image(img)
 
+
     elif choice == 'CSV':
         st.subheader('CSV file upload')
 
+        file = st.file_uploader('CSV File upload', type = ['csv'])
 
+        if file is not None:
+            # Make file name unique
+            current_time = datetime.now()
 
+            print( current_time.isoformat().replace(':','_').replace('.','_') + '.csv')
+
+            file.name = current_time.isoformat().replace(':','_').replace('.','_') + '.csv'
+
+            # save csv file
+            save_uploaded_file('csv',file)
+
+            # Save csv file as pandas dataframe
+            # And show web screen
+            df = pd.read_csv(file)
+            
+            st.dataframe(df)
 
 
 if __name__ == '__main__':
